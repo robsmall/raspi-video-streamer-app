@@ -1,3 +1,5 @@
 <resources>
   <string name="app_name">RaspiVideoStreamer</string>
+  <string name="arbor_streaming_cam_title">Welcome to the Arbor Streaming Cam!</string>
+  <string name="view_stream_button_text">View Stream</string>
 </resources>
