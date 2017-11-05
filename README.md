@@ -12,3 +12,19 @@ Resources For Learning:
 Credits
 -------
 - // TODO: Note the mjpeg library
+
+
+Configuration
+-------------
+In the `build.gradle` file licated in `app`, you must create and set the path
+and properties for `secureProperties`.
+
+For Example:
+
+I have a file located at `/Users/robsmall/src/android/RaspiVideoStreamer/secure-gradle.properties` that contains:
+```
+BaseApiUrl=http://10.0.0.7:5000
+BaseRawStreamUrl=http://10.0.0.7:8000
+```
+
+See < // TODO: Inset Link To Backend Repo Once Supplied> for how to set up the server side for this project.

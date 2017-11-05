@@ -99,6 +99,7 @@ class StreamActivity : AppCompatActivity() {
     // Look at https://medium.com/@CodyEngel/managing-disposables-in-rxjava-2-for-android-388722ae1e8a
     // and https://github.com/r7v/Tweetz/blob/2ccd62366b07ddea4e0688e310d5dd19a37c7a5e/app/src/main/java/com/rahulrv/tweetz/viewmodel/BaseViewModel.java
     // for Disposable management.
+    // TODO: look into "Error receiving response. Non-crashing
     ApiClient().stopStream(uid)
         .observeOn(Schedulers.io())
         .subscribeOn(Schedulers.io())

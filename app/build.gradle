@@ -2,11 +2,33 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.admc.javaPropFile'
+
+// For custom URL settings, create a secure-gradle.properties file and place the path below.
+// The file should look like this, replacing the values with the values for your server:
+//      BaseApiUrl=http://hostname:port
+//      BaseRawStreamUrl=http://hostname:port
+def secureProperties = new File('/Users/robsmall/src/android/RaspiVideoStreamer/secure-gradle.properties')
+if (secureProperties.isFile()) {
+    propFileLoader.load(secureProperties)
+}
 
 android {
     // Fix for https://github.com/ReactiveX/RxJava/issues/4445
     packagingOptions {
         exclude 'META-INF/rxjava.properties'
+    }
+
+    // Used to hide urls from the android application so they can be passed in secretly from the
+    // secureProperties file above.
+    def BASE_API_URL
+    def BASE_RAW_STREAM_URL
+    if (project.hasProperty('BaseApiUrl') && project.hasProperty('BaseRawStreamUrl')) {
+        BASE_API_URL = '"' + BaseApiUrl + '"'
+        BASE_RAW_STREAM_URL = '"' + BaseRawStreamUrl + '"'
+    } else {
+        BASE_API_URL = '"' + "http://0.0.0.0:5000" + '"'
+        BASE_RAW_STREAM_URL = '"' + "http://0.0.0.0:8000" + '"'
     }
 
     compileSdkVersion 26
@@ -18,7 +40,14 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // Set the BuildConfig fields to be used in the application from the secureProperties file.
+        each {
+            it.buildConfigField 'String', 'BASE_API_URL', BASE_API_URL
+            it.buildConfigField 'String', 'BASE_RAW_STREAM_URL', BASE_RAW_STREAM_URL
+        }
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -36,7 +65,7 @@ buildscript {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
