@@ -5,14 +5,33 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
+  android:background="@color/light_grey"
+  android:orientation="vertical"
   tools:context="robsmall.raspivideostreamer.MainActivity">
+
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:text="@string/stream_title"
+    android:textSize="22sp"
+    android:textStyle="bold"/>
 
   <com.github.niqdev.mjpeg.MjpegSurfaceView
     android:id="@+id/stream_view"
+    android:layout_weight="1"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="0dp"
     app:type="stream_default"/>
 
-  <!-- app:type="stream_default OR stream_native"-->
+  <android.support.v7.widget.AppCompatButton
+    android:id="@+id/stop_stream_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:text="@string/stop_stream_button"
+    android:textColor="@color/white"
+    android:textSize="18sp"
+    app:backgroundTint="@color/colorPrimary"/>
 
 </LinearLayout>
