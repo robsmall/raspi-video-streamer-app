@@ -9,15 +9,9 @@ Resources For Learning:
 - [Kotlin & Retrofit article](https://android.jlelse.eu/keddit-part-6-api-retrofit-kotlin-d309074af0) -- See related github.
 - [Kotlin & RxJava & RxAndroid article](https://android.jlelse.eu/keddit-part-5-kotlin-rxjava-rxandroid-105f95bfcd22) -- See related github.
 
-Credits
--------
-- // TODO: Note the mjpeg library
-
-
 Configuration
 -------------
-In the `build.gradle` file licated in `app`, you must create and set the path
-and properties for `secureProperties`.
+In the `build.gradle` file licated in `app`, you must create and set the path and properties for `secureProperties`.
 
 For Example:
 
@@ -28,3 +22,18 @@ BaseRawStreamUrl=http://10.0.0.7:8000
 ```
 
 See < // TODO: Inset Link To Backend Repo Once Supplied> for how to set up the server side for this project.
+
+For more information on this gradle plugin, please [Check the Java Prop File documentation](https://plugins.gradle.org/plugin/com.admc.javaPropFile)
+
+Credits
+-------
+- [MJpeg Library](https://github.com/niqdev/ipcam-view)
+- [RetroFit](http://square.github.io/retrofit/)
+- [RxJava](https://github.com/ReactiveX/RxJava)
+- [RxAndroid](https://github.com/ReactiveX/RxAndroid)
+- [OkHTTP](http://square.github.io/okhttp/)
+- [Timber](https://github.com/JakeWharton/timber)
+- [RxJava2Adapter for Retrofit](https://github.com/square/retrofit/tree/master/retrofit-adapters/rxjava2)
+- [Moshi Converter for Retrofit](https://github.com/square/retrofit/tree/master/retrofit-converters/moshi)
+- [ButterKnife](http://jakewharton.github.io/butterknife/)
+- [Java Prop File](https://plugins.gradle.org/plugin/com.admc.javaPropFile)
