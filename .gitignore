@@ -43,3 +43,6 @@ Thumbs.db
 /build
 /captures
 .externalNativeBuild
+
+# custom config variables
+secure-gradle.properties
