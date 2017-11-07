@@ -105,7 +105,7 @@ class StreamActivity : AppCompatActivity() {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe({ apiResponse ->
-          Timber.i("Received response: " + apiResponse.data.toString())
+          Timber.i("Received response: " + apiResponse.status)
         }, { throwable ->
           Timber.e(throwable, "Error receiving response.")
         }
