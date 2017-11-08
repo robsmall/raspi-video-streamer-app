@@ -22,6 +22,8 @@ import android.location.LocationManager
 import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager
 import android.preference.PreferenceManager
+import android.view.Menu
+import android.view.MenuItem
 import com.squareup.moshi.Moshi
 import robsmall.raspivideostreamer.api.ApiManager
 import robsmall.raspivideostreamer.baseClasses.DisposableActivity
@@ -60,6 +62,20 @@ class StreamActivity : DisposableActivity() {
     uid = getUidFromPrefs()
 
     url_params = hashMapOf("uid" to uid)
+
+    // Note: We can use !! here because we know the supportActionBar should never be null in practice
+    // (even though Android Studio says it POSSIBLY can be :))
+    supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+  }
+
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    return when (item.itemId) {
+      android.R.id.home -> {
+        finish()
+        true
+      }
+      else -> super.onOptionsItemSelected(item)
+    }
   }
 
   override fun onRequestPermissionsResult(requestCode: Int,
@@ -234,8 +250,8 @@ class StreamActivity : DisposableActivity() {
         Toast.LENGTH_SHORT).show()
   }
 
-  @OnClick(R.id.stop_stream_button)
-  fun onStopClick() {
+  @OnClick(R.id.disable_stream_button)
+  fun onDisableClick() {
     Timber.d("Stopping video stream.")
 
     disposables.add(ApiManager.disableStreams(uid)
@@ -245,6 +261,20 @@ class StreamActivity : DisposableActivity() {
           displayBlockingCameraMessage(startStopResponse)
         }, { throwable ->
           Timber.e(throwable, "Error receiving response when explicitly stopping.")
+        }))
+  }
+
+  @OnClick(R.id.enable_stream_button)
+  fun onEnableClick() {
+    Timber.d("Stopping video stream.")
+
+    disposables.add(ApiManager.enableStreams(uid)
+        .subscribe({ startStopResponse ->
+          Timber.i("Received response when starting: " +
+              moshi.adapter(StartStopResponse::class.java).toJson(startStopResponse))
+          displayBlockingCameraMessage(startStopResponse)
+        }, { throwable ->
+          Timber.e(throwable, "Error receiving response when starting.")
         }))
   }
 

@@ -20,4 +20,9 @@ interface ApiService {
   fun disableStreams(
       @Query("uid") uid: String
   ): Observable<StartStopResponse>
+
+  @POST("/enable_feed")
+  fun enableStreams(
+      @Query("uid") uid: String
+  ): Observable<StartStopResponse>
 }

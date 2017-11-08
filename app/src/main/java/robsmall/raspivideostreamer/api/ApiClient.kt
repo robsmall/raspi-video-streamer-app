@@ -42,11 +42,19 @@ object ApiClient {
    * ==================
    */
   /**
-   * Tell the server to stop all streams.
+   * Tell the server to disable all streams.
    */
   @JvmStatic
   fun disableStreams(uid: String): Observable<StartStopResponse> {
     return apiService.disableStreams(uid)
+  }
+
+  /**
+   * Tell the server to enable all streams.
+   */
+  @JvmStatic
+  fun enableStreams(uid: String): Observable<StartStopResponse> {
+    return apiService.enableStreams(uid)
   }
 
   /**

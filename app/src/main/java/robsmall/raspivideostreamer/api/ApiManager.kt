@@ -22,4 +22,11 @@ object ApiManager {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
   }
+
+  fun enableStreams(uid: String): Observable<StartStopResponse> {
+    return ApiClient.enableStreams(uid)
+        .observeOn(Schedulers.io())
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+  }
 }

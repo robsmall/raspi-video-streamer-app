@@ -31,13 +31,25 @@
     android:padding="8dp">
 
     <android.support.v7.widget.AppCompatButton
-      android:id="@+id/stop_stream_button"
+      android:id="@+id/enable_stream_button"
       android:layout_width="0dp"
       android:layout_height="match_parent"
       android:layout_marginEnd="16dp"
       android:layout_marginRight="16dp"
       android:layout_weight="1"
-      android:text="@string/stop_stream_button"
+      android:text="@string/enable_stream_button"
+      android:textColor="@color/white"
+      android:textSize="18sp"
+      app:backgroundTint="@color/colorPrimary"/>
+
+    <android.support.v7.widget.AppCompatButton
+      android:id="@+id/disable_stream_button"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_marginEnd="16dp"
+      android:layout_marginRight="16dp"
+      android:layout_weight="1"
+      android:text="@string/disable_stream_button"
       android:textColor="@color/white"
       android:textSize="18sp"
       app:backgroundTint="@color/colorPrimary"/>
