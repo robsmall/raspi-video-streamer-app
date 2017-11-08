@@ -19,19 +19,38 @@
 
   <com.github.niqdev.mjpeg.MjpegSurfaceView
     android:id="@+id/stream_view"
-    android:layout_weight="1"
     android:layout_width="match_parent"
     android:layout_height="0dp"
+    android:layout_weight="1"
     app:type="stream_default"/>
 
-  <android.support.v7.widget.AppCompatButton
-    android:id="@+id/stop_stream_button"
+  <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:text="@string/stop_stream_button"
-    android:textColor="@color/white"
-    android:textSize="18sp"
-    app:backgroundTint="@color/colorPrimary"/>
+    android:orientation="horizontal"
+    android:padding="8dp">
 
+    <android.support.v7.widget.AppCompatButton
+      android:id="@+id/stop_stream_button"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_marginEnd="16dp"
+      android:layout_marginRight="16dp"
+      android:layout_weight="1"
+      android:text="@string/stop_stream_button"
+      android:textColor="@color/white"
+      android:textSize="18sp"
+      app:backgroundTint="@color/colorPrimary"/>
+
+    <android.support.v7.widget.AppCompatButton
+      android:id="@+id/update_location_button"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="1"
+      android:text="@string/start_location"
+      android:textColor="@color/white"
+      android:textSize="18sp"
+      app:backgroundTint="@color/colorPrimary"/>
+
+  </LinearLayout>
 </LinearLayout>

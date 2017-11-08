@@ -4,6 +4,9 @@
 
   <uses-permission android:name="android.permission.INTERNET"/>
 
+  <!-- Used for GeoFencing. -->
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
   <application
     android:name=".RasPiVideoStreamerApplication"
     android:allowBackup="true"

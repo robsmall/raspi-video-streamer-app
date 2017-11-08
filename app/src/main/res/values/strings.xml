@@ -4,4 +4,5 @@
   <string name="view_stream_button_text">View Stream</string>
   <string name="stream_title">Arbor Cam Live Stream</string>
   <string name="stop_stream_button">Stop Stream</string>
+  <string name="start_location">Start Location</string>
 </resources>

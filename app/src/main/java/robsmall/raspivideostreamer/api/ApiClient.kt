@@ -44,8 +44,8 @@ object ApiClient {
    * Tell the server to stop all streams.
    */
   @JvmStatic
-  fun stopStream(uid: String): Observable<ApiResponse> {
-    return apiService.stopStream(uid)
+  fun stopAllStreams(uid: String): Observable<ApiResponse> {
+    return apiService.stopAllStreams(uid)
   }
 
   /**

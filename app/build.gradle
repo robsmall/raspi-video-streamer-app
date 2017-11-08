@@ -5,9 +5,12 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.admc.javaPropFile'
 
 // For custom URL settings, create a secure-gradle.properties file and place the path below.
-// The file should look like this, replacing the values with the values for your server:
+// The file should look like this, replacing the values with the values for your server and
+// home location:
 //      BaseApiUrl=http://hostname:port
 //      BaseRawStreamUrl=http://hostname:port
+//      HomeLatitude=0.0
+//      HomeLongitude=0.0
 def secureProperties = new File('/Users/robsmall/src/android/RaspiVideoStreamer/secure-gradle.properties')
 if (secureProperties.isFile()) {
     propFileLoader.load(secureProperties)
@@ -23,12 +26,19 @@ android {
     // secureProperties file above.
     def BASE_API_URL
     def BASE_RAW_STREAM_URL
-    if (project.hasProperty('BaseApiUrl') && project.hasProperty('BaseRawStreamUrl')) {
+    def HOME_LATITUDE
+    def HOME_LONGIGUDE
+    if (project.hasProperty('BaseApiUrl') && project.hasProperty('BaseRawStreamUrl') &&
+            project.hasProperty('HomeLatitude') && project.hasProperty('HomeLongitude')) {
         BASE_API_URL = '"' + BaseApiUrl + '"'
         BASE_RAW_STREAM_URL = '"' + BaseRawStreamUrl + '"'
+        HOME_LATITUDE = HomeLatitude
+        HOME_LONGIGUDE = HomeLongitude
     } else {
         BASE_API_URL = '"' + "http://0.0.0.0:5000" + '"'
         BASE_RAW_STREAM_URL = '"' + "http://0.0.0.0:8000" + '"'
+        HOME_LATITUDE = 0.0
+        HOME_LONGIGUDE = 0.0
     }
 
     compileSdkVersion 26
@@ -45,6 +55,8 @@ android {
         each {
             it.buildConfigField 'String', 'BASE_API_URL', BASE_API_URL
             it.buildConfigField 'String', 'BASE_RAW_STREAM_URL', BASE_RAW_STREAM_URL
+            it.buildConfigField 'Double', 'HOME_LATITUDE', HOME_LATITUDE
+            it.buildConfigField 'Double', 'HOME_LONGITUDE', HOME_LONGIGUDE
         }
     }
 
@@ -60,6 +72,7 @@ buildscript {
     ext.butterknifeVersion = '8.8.1'
     ext.okHttpVersion = '3.9.0'
     ext.retrofitVersion = '2.3.0'
+    ext.supportLibVersion = '26.1.0'
 }
 
 dependencies {
@@ -68,6 +81,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    implementation "com.android.support:support-v4:$supportLibVersion"
 
     implementation "com.jakewharton:butterknife:${butterknifeVersion}"
     kapt "com.jakewharton:butterknife-compiler:${butterknifeVersion}"
