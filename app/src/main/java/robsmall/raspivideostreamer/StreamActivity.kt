@@ -12,7 +12,6 @@ import android.widget.Toast
 import com.github.niqdev.mjpeg.DisplayMode
 import com.github.niqdev.mjpeg.Mjpeg
 import timber.log.Timber
-import java.util.*
 import android.net.Uri
 import butterknife.OnClick
 import robsmall.raspivideostreamer.api.HOST_URL
@@ -22,34 +21,45 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.support.v4.app.ActivityCompat
 import android.content.pm.PackageManager
+import android.preference.PreferenceManager
+import com.squareup.moshi.Moshi
 import robsmall.raspivideostreamer.api.ApiManager
 import robsmall.raspivideostreamer.baseClasses.DisposableActivity
+import robsmall.raspivideostreamer.api.models.StartStopResponse
+import java.util.*
 
 
 class StreamActivity : DisposableActivity() {
   @BindView(R.id.stream_view) lateinit var streamView: MjpegView
 
-  private val uid: String = UUID.randomUUID().toString()
+  private lateinit var uid: String
   private lateinit var locationManager: LocationManager
   private lateinit var homeLocation: Location
+  private lateinit var moshi: Moshi
+  private lateinit var url_params: HashMap<String, String>
+
 
   private val LOCATION_REQUEST_CODE = 100
   private val TIMEOUT = 5
-  private val URL_PARAMS: HashMap<String, String> = hashMapOf("uid" to uid)
   private val MAX_METERS_FROM_HOME = 100.0
+  private val UUID_PREFS_KEY = "uuid.prefs.key"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_stream_view)
     ButterKnife.bind(this)
 
-    // Create persistent LocationManager reference
     locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
 
-    // Set up the home location from the private gradle file.
     homeLocation = Location("")
     homeLocation.latitude = BuildConfig.HOME_LATITUDE
     homeLocation.longitude = BuildConfig.HOME_LONGITUDE
+
+    moshi = Moshi.Builder().build()
+
+    uid = getUidFromPrefs()
+
+    url_params = hashMapOf("uid" to uid)
   }
 
   override fun onRequestPermissionsResult(requestCode: Int,
@@ -77,6 +87,27 @@ class StreamActivity : DisposableActivity() {
   }
 
   /**
+   * Set the shared uid from shared preferences.
+   */
+  private fun setUidPref(uid: String) {
+    PreferenceManager.getDefaultSharedPreferences(applicationContext).edit().putString(UUID_PREFS_KEY, uid).apply()
+  }
+
+  /**
+   * Get the shared uid from shared preferences.
+   */
+  private fun getUidFromPrefs(): String {
+    var uid = PreferenceManager.getDefaultSharedPreferences(applicationContext).getString(UUID_PREFS_KEY, null)
+
+    if (uid == null) {
+      uid = UUID.randomUUID().toString()
+      setUidPref(uid)
+    }
+
+    return uid
+  }
+
+  /**
    * Get the DisplayMode based on the current orientation of the screen.
    */
   private fun getDisplayMode(): DisplayMode {
@@ -94,7 +125,7 @@ class StreamActivity : DisposableActivity() {
   private fun getUrlWithParams(): String {
     var url_builder = Uri.parse(HOST_URL + "/" + VIDEO_FEED_PATH).buildUpon()
 
-    for (param in URL_PARAMS) {
+    for (param in url_params) {
       url_builder.appendQueryParameter(param.key, param.value)
     }
 
@@ -146,11 +177,13 @@ class StreamActivity : DisposableActivity() {
         Timber.d("User is closer than $MAX_METERS_FROM_HOME meters " +
             "($distanceFromHome meters)from home location, disabling all cameras")
 
-        disposables.add(ApiManager.stopAllStreams(uid)
-            .subscribe({ apiResponse ->
-              Timber.i("Received response: " + apiResponse.status)
+        disposables.add(ApiManager.disableStreams(uid)
+            .subscribe({ startStopResponse ->
+              Timber.i("Received response when changing location: " +
+                  moshi.adapter(StartStopResponse::class.java).toJson(startStopResponse))
+              displayBlockingCameraMessage(startStopResponse)
             }, { throwable ->
-              Timber.e(throwable, "Error receiving response.")
+              Timber.e(throwable, "Error receiving response when changing location.")
             }))
       }
     }
@@ -191,15 +224,27 @@ class StreamActivity : DisposableActivity() {
     }
   }
 
+  /**
+   * Tell the user how many cameras are now blocking the feed.
+   */
+  private fun displayBlockingCameraMessage(startStopResponse: StartStopResponse) {
+    // Yeah, singular and plurals and things... IDC at this time.
+    Toast.makeText(this, "Disabled camera. " +
+        "There are now ${startStopResponse.response.blocking_cameras} more cameras blocking the feed.",
+        Toast.LENGTH_SHORT).show()
+  }
+
   @OnClick(R.id.stop_stream_button)
   fun onStopClick() {
     Timber.d("Stopping video stream.")
 
-    disposables.add(ApiManager.stopAllStreams(uid)
-        .subscribe({ apiResponse ->
-          Timber.i("Received response: " + apiResponse.status)
+    disposables.add(ApiManager.disableStreams(uid)
+        .subscribe({ startStopResponse ->
+          Timber.i("Received response when explicitly stopping: " +
+              moshi.adapter(StartStopResponse::class.java).toJson(startStopResponse))
+          displayBlockingCameraMessage(startStopResponse)
         }, { throwable ->
-          Timber.e(throwable, "Error receiving response.")
+          Timber.e(throwable, "Error receiving response when explicitly stopping.")
         }))
   }
 

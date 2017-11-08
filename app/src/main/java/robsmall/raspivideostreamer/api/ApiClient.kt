@@ -7,6 +7,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
+import robsmall.raspivideostreamer.api.models.StartStopResponse
 
 
 /**
@@ -44,8 +45,8 @@ object ApiClient {
    * Tell the server to stop all streams.
    */
   @JvmStatic
-  fun stopAllStreams(uid: String): Observable<ApiResponse> {
-    return apiService.stopAllStreams(uid)
+  fun disableStreams(uid: String): Observable<StartStopResponse> {
+    return apiService.disableStreams(uid)
   }
 
   /**

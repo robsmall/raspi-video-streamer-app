@@ -3,6 +3,7 @@ package robsmall.raspivideostreamer.api
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import robsmall.raspivideostreamer.api.models.StartStopResponse
 
 
 /**
@@ -15,12 +16,8 @@ import io.reactivex.schedulers.Schedulers
  */
 object ApiManager {
 
-  fun stopAllStreams(uid: String): Observable<ApiResponse> {
-    // TODO: hold on to a subscription and destroy it.
-    // Look at https://medium.com/@CodyEngel/managing-disposables-in-rxjava-2-for-android-388722ae1e8a
-    // and https://github.com/r7v/Tweetz/blob/2ccd62366b07ddea4e0688e310d5dd19a37c7a5e/app/src/main/java/com/rahulrv/tweetz/viewmodel/BaseViewModel.java
-    // for Disposable management.
-    return ApiClient.stopAllStreams(uid)
+  fun disableStreams(uid: String): Observable<StartStopResponse> {
+    return ApiClient.disableStreams(uid)
         .observeOn(Schedulers.io())
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
