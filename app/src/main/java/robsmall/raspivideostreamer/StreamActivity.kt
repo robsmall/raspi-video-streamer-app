@@ -40,7 +40,6 @@ class StreamActivity : DisposableActivity() {
   private lateinit var moshi: Moshi
   private lateinit var url_params: HashMap<String, String>
 
-
   private val LOCATION_REQUEST_CODE = 100
   private val TIMEOUT = 5
   private val MAX_METERS_FROM_HOME = 100.0
@@ -68,13 +67,61 @@ class StreamActivity : DisposableActivity() {
     supportActionBar!!.setDisplayHomeAsUpEnabled(true)
   }
 
+  override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    menuInflater.inflate(R.menu.stream_menu, menu)
+    return true
+  }
+
   override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    return when (item.itemId) {
+    when (item.itemId) {
       android.R.id.home -> {
         finish()
-        true
+        return true
       }
-      else -> super.onOptionsItemSelected(item)
+      R.id.enable_stream -> {
+        Timber.d("Starting video stream.")
+
+        disposables.add(ApiManager.enableStreams(uid)
+            .subscribe({ startStopResponse ->
+              Timber.i("Received response when starting: " +
+                  moshi.adapter(StartStopResponse::class.java).toJson(startStopResponse))
+              displayBlockingCameraMessage(startStopResponse)
+            }, { throwable ->
+              Timber.e(throwable, "Error receiving response when starting.")
+            }))
+
+        return true
+      }
+      R.id.disable_stream -> {
+        Timber.d("Stopping video stream.")
+
+        disposables.add(ApiManager.disableStreams(uid)
+            .subscribe({ startStopResponse ->
+              Timber.i("Received response when explicitly stopping: " +
+                  moshi.adapter(StartStopResponse::class.java).toJson(startStopResponse))
+              displayBlockingCameraMessage(startStopResponse)
+            }, { throwable ->
+              Timber.e(throwable, "Error receiving response when explicitly stopping.")
+            }))
+
+        return true
+      }
+      R.id.enable_location -> {
+        Timber.d("Updating location.")
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+          ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
+        } else {
+          startUpdatingLocation()
+        }
+
+        return true
+      }
+      R.id.disable_location -> {
+        stopUpdatingLocation()
+        return true
+      }
+      else -> return super.onOptionsItemSelected(item)
     }
   }
 
@@ -95,11 +142,14 @@ class StreamActivity : DisposableActivity() {
   override fun onResume() {
     super.onResume()
     loadRasPiCam()
+
+    // TODO: get whether we were updating location from the savedinstancestate and resume if so.
   }
 
   override fun onPause() {
     super.onPause()
     streamView.stopPlayback()
+    stopUpdatingLocation()
   }
 
   /**
@@ -167,7 +217,7 @@ class StreamActivity : DisposableActivity() {
             }
         ) { throwable ->
           Timber.e(throwable, "MJpeg error when streaming video.")
-          Toast.makeText(this, "Error streaming video.", Toast.LENGTH_LONG).show()
+          Toast.makeText(this, "Error streaming video: " + throwable.message, Toast.LENGTH_LONG).show()
         }
   }
 
@@ -223,8 +273,9 @@ class StreamActivity : DisposableActivity() {
    */
   @SuppressLint("MissingPermission")
   private fun startUpdatingLocation() {
-    locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+    Timber.d("Stating location updates.")
 
+    locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
     try {
       // This should be caught below so suppressing lint
       locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
@@ -241,6 +292,14 @@ class StreamActivity : DisposableActivity() {
   }
 
   /**
+   * Tell the locationManager to stop updating the locationListener
+   */
+  private fun stopUpdatingLocation() {
+    Timber.d("Stopping location updates...")
+    locationManager.removeUpdates(locationListener)
+  }
+
+  /**
    * Tell the user how many cameras are now blocking the feed.
    */
   private fun displayBlockingCameraMessage(startStopResponse: StartStopResponse) {
@@ -248,44 +307,5 @@ class StreamActivity : DisposableActivity() {
     Toast.makeText(this, "Disabled camera. " +
         "There are now ${startStopResponse.response.blocking_cameras} more cameras blocking the feed.",
         Toast.LENGTH_SHORT).show()
-  }
-
-  @OnClick(R.id.disable_stream_button)
-  fun onDisableClick() {
-    Timber.d("Stopping video stream.")
-
-    disposables.add(ApiManager.disableStreams(uid)
-        .subscribe({ startStopResponse ->
-          Timber.i("Received response when explicitly stopping: " +
-              moshi.adapter(StartStopResponse::class.java).toJson(startStopResponse))
-          displayBlockingCameraMessage(startStopResponse)
-        }, { throwable ->
-          Timber.e(throwable, "Error receiving response when explicitly stopping.")
-        }))
-  }
-
-  @OnClick(R.id.enable_stream_button)
-  fun onEnableClick() {
-    Timber.d("Stopping video stream.")
-
-    disposables.add(ApiManager.enableStreams(uid)
-        .subscribe({ startStopResponse ->
-          Timber.i("Received response when starting: " +
-              moshi.adapter(StartStopResponse::class.java).toJson(startStopResponse))
-          displayBlockingCameraMessage(startStopResponse)
-        }, { throwable ->
-          Timber.e(throwable, "Error receiving response when starting.")
-        }))
-  }
-
-  @OnClick(R.id.update_location_button)
-  fun onUpdateLocationClick() {
-    Timber.d("Updating location.")
-
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
-    } else {
-      startUpdatingLocation()
-    }
   }
 }

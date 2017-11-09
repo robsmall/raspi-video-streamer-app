@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools">
+
+  <item
+    android:id="@+id/enable_stream"
+    android:title="@string/enable_stream"
+    android:titleCondensed="@string/enable_stream"
+    app:showAsAction="never"
+    tools:ignore="AppCompatResource">
+  </item>
+
+  <item
+    android:id="@+id/disable_stream"
+    android:title="@string/disable_stream"
+    android:titleCondensed="@string/disable_stream"
+    app:showAsAction="never"
+    tools:ignore="AppCompatResource">
+  </item>
+
+  <item
+    android:id="@+id/enable_location"
+    android:title="@string/start_location"
+    android:titleCondensed="@string/start_location"
+    app:showAsAction="never"
+    tools:ignore="AppCompatResource">
+  </item>
+
+  <item
+    android:id="@+id/disable_location"
+    android:title="@string/disable_location"
+    android:titleCondensed="@string/disable_location"
+    app:showAsAction="never"
+    tools:ignore="AppCompatResource">
+  </item>
+
+</menu>

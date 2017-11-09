@@ -24,7 +24,9 @@
       </intent-filter>
     </activity>
 
-    <activity android:name=".StreamActivity"/>
+    <activity
+      android:name=".StreamActivity"
+      android:label="@string/stream_title"/>
   </application>
 
 </manifest>

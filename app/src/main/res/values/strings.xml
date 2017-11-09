@@ -1,9 +1,11 @@
 <resources>
   <string name="app_name">RaspiVideoStreamer</string>
-  <string name="arbor_streaming_cam_title">Welcome to the Arbor Streaming Cam!</string>
+  <string name="arbor_streaming_cam_title">Welcome to ArborCam!</string>
   <string name="view_stream_button_text">View Stream</string>
-  <string name="stream_title">Arbor Cam Live Stream</string>
-  <string name="disable_stream_button">Disable Stream</string>
-  <string name="enable_stream_button">Enable Stream</string>
+  <string name="stream_title">Arbor Camera Live Stream</string>
+  <string name="disable_stream">Disable Stream</string>
+  <string name="enable_stream">Enable Stream</string>
   <string name="start_location">Start Location</string>
+  <string name="url_text">Connection URL: %s</string>
+  <string name="disable_location">Disable location</string>
 </resources>
