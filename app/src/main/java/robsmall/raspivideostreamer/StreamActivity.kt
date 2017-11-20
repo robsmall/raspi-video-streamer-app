@@ -13,7 +13,6 @@ import com.github.niqdev.mjpeg.DisplayMode
 import com.github.niqdev.mjpeg.Mjpeg
 import timber.log.Timber
 import android.net.Uri
-import butterknife.OnClick
 import robsmall.raspivideostreamer.api.HOST_URL
 import robsmall.raspivideostreamer.api.VIDEO_FEED_PATH
 import kotlin.collections.HashMap
@@ -60,7 +59,7 @@ class StreamActivity : DisposableActivity() {
 
     uid = getUidFromPrefs()
 
-    url_params = hashMapOf("uid" to uid)
+    url_params = hashMapOf("uid" to uid, "is_mobile" to "True")
 
     // Note: We can use !! here because we know the supportActionBar should never be null in practice
     // (even though Android Studio says it POSSIBLY can be :))
