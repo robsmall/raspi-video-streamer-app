@@ -1,6 +1,7 @@
 # raspi-video-streamer-app
 Kotlin Android Application For Receiving a Live Stream from A RaspberryPi.
-// TODO: Add link to backend repo.
+
+Server implementation is available at [robsmall/flask-raspi-video-streamer](https://github.com/robsmall/flask-raspi-video-streamer)
 
 Resources For Learning:
 -----------------------
@@ -21,9 +22,9 @@ BaseApiUrl=http://10.0.0.7:5000
 BaseRawStreamUrl=http://10.0.0.7:8000
 ```
 
-See < // TODO: Inset Link To Backend Repo Once Supplied> for how to set up the server side for this project.
-
 For more information on this gradle plugin, please [Check the Java Prop File documentation](https://plugins.gradle.org/plugin/com.admc.javaPropFile)
+
+For the example server, check out [robsmall/flask-raspi-video-streamer](https://github.com/robsmall/flask-raspi-video-streamer)
 
 Credits
 -------
