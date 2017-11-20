@@ -79,30 +79,12 @@ class StreamActivity : DisposableActivity() {
       }
       R.id.enable_stream -> {
         Timber.d("Starting video stream.")
-
-        disposables.add(ApiManager.enableStreams(uid)
-            .subscribe({ startStopResponse ->
-              Timber.i("Received response when starting: " +
-                  moshi.adapter(StartStopResponse::class.java).toJson(startStopResponse))
-              displayBlockingCameraMessage(startStopResponse)
-            }, { throwable ->
-              Timber.e(throwable, "Error receiving response when starting.")
-            }))
-
+        enableCamera()
         return true
       }
       R.id.disable_stream -> {
         Timber.d("Stopping video stream.")
-
-        disposables.add(ApiManager.disableStreams(uid)
-            .subscribe({ startStopResponse ->
-              Timber.i("Received response when explicitly stopping: " +
-                  moshi.adapter(StartStopResponse::class.java).toJson(startStopResponse))
-              displayBlockingCameraMessage(startStopResponse)
-            }, { throwable ->
-              Timber.e(throwable, "Error receiving response when explicitly stopping.")
-            }))
-
+        disableCamera()
         return true
       }
       R.id.enable_location -> {
@@ -117,6 +99,8 @@ class StreamActivity : DisposableActivity() {
         return true
       }
       R.id.disable_location -> {
+        // TODO: Show a dialog here asking if the user wants to re-enable the camera if they
+        //       explicitly stopped it.
         stopUpdatingLocation()
         return true
       }
@@ -221,6 +205,34 @@ class StreamActivity : DisposableActivity() {
   }
 
   /**
+   * Tell the server to enable all camera feeds (if no one else if blocking them).
+   */
+  fun enableCamera() {
+    disposables.add(ApiManager.enableStreams(uid)
+        .subscribe({ startStopResponse ->
+          Timber.i("Received response when starting camera: " +
+              moshi.adapter(StartStopResponse::class.java).toJson(startStopResponse))
+          displayBlockingCameraMessage(startStopResponse)
+        }, { throwable ->
+          Timber.e(throwable, "Error receiving response when starting camera.")
+        }))
+  }
+
+  /**
+   * Tell the server to disable all camera feeds.
+   */
+  fun disableCamera() {
+    disposables.add(ApiManager.disableStreams(uid)
+        .subscribe({ startStopResponse ->
+          Timber.i("Received response when stopping camera: " +
+              moshi.adapter(StartStopResponse::class.java).toJson(startStopResponse))
+          displayBlockingCameraMessage(startStopResponse)
+        }, { throwable ->
+          Timber.e(throwable, "Error receiving response when stopping camera.")
+        }))
+  }
+
+  /**
    * How far away the user currently is from the home location.
    */
   private fun distanceFromHome(currentLocation: Location): Float {
@@ -240,16 +252,12 @@ class StreamActivity : DisposableActivity() {
       val distanceFromHome = distanceFromHome(currentLocation)
       if (distanceFromHome < MAX_METERS_FROM_HOME) {
         Timber.d("User is closer than $MAX_METERS_FROM_HOME meters " +
-            "($distanceFromHome meters)from home location, disabling all cameras")
-
-        disposables.add(ApiManager.disableStreams(uid)
-            .subscribe({ startStopResponse ->
-              Timber.i("Received response when changing location: " +
-                  moshi.adapter(StartStopResponse::class.java).toJson(startStopResponse))
-              displayBlockingCameraMessage(startStopResponse)
-            }, { throwable ->
-              Timber.e(throwable, "Error receiving response when changing location.")
-            }))
+            "($distanceFromHome meters) from home location, disabling all cameras.")
+        disableCamera()
+      } else {
+        Timber.d("User is further than $MAX_METERS_FROM_HOME meters " +
+            "($distanceFromHome meters) from home location, enabling all cameras if possible.")
+        enableCamera()
       }
     }
 
@@ -263,7 +271,6 @@ class StreamActivity : DisposableActivity() {
 
     override fun onProviderDisabled(provider: String) {
       Timber.d("Location Provider disabled: ", provider)
-
     }
   }
 
