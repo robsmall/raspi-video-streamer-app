@@ -172,13 +172,13 @@ class StreamActivity : DisposableActivity() {
    * {@code URL_PARAMS}.
    */
   private fun getUrlWithParams(): String {
-    var url_builder = Uri.parse(HOST_URL + "/" + VIDEO_FEED_PATH).buildUpon()
+    val urlBuilder = Uri.parse(HOST_URL + "/" + VIDEO_FEED_PATH).buildUpon()
 
     for (param in url_params) {
-      url_builder.appendQueryParameter(param.key, param.value)
+      urlBuilder.appendQueryParameter(param.key, param.value)
     }
 
-    val url = url_builder.toString()
+    val url = urlBuilder.toString()
     Timber.i("Video Url = " + url)
 
     return url
@@ -212,7 +212,7 @@ class StreamActivity : DisposableActivity() {
         .subscribe({ startStopResponse ->
           Timber.i("Received response when starting camera: " +
               moshi.adapter(StartStopResponse::class.java).toJson(startStopResponse))
-          displayBlockingCameraMessage(startStopResponse)
+          displayBlockingCameraMessage(startStopResponse, false)
         }, { throwable ->
           Timber.e(throwable, "Error receiving response when starting camera.")
         }))
@@ -226,7 +226,7 @@ class StreamActivity : DisposableActivity() {
         .subscribe({ startStopResponse ->
           Timber.i("Received response when stopping camera: " +
               moshi.adapter(StartStopResponse::class.java).toJson(startStopResponse))
-          displayBlockingCameraMessage(startStopResponse)
+          displayBlockingCameraMessage(startStopResponse, true)
         }, { throwable ->
           Timber.e(throwable, "Error receiving response when stopping camera.")
         }))
@@ -235,15 +235,12 @@ class StreamActivity : DisposableActivity() {
   /**
    * How far away the user currently is from the home location.
    */
-  private fun distanceFromHome(currentLocation: Location): Float {
-    return homeLocation.distanceTo(currentLocation)
-  }
+  private fun distanceFromHome(currentLocation: Location): Float = homeLocation.distanceTo(currentLocation)
 
   /**
    * LocationListener to manage changing of location. If the user is closer than
    * MAX_METERS_FROM_HOME, then turn all camera feeds off.
-   *
-   * TODO: Otherwise, turn the camera back on.
+   * Otherwise, stop blocking the camera feed.
    */
   private val locationListener: LocationListener = object : LocationListener {
     override fun onLocationChanged(currentLocation: Location) {
@@ -308,10 +305,11 @@ class StreamActivity : DisposableActivity() {
   /**
    * Tell the user how many cameras are now blocking the feed.
    */
-  private fun displayBlockingCameraMessage(startStopResponse: StartStopResponse) {
+  private fun displayBlockingCameraMessage(startStopResponse: StartStopResponse, isStopping: Boolean) {
     // Yeah, singular and plurals and things... IDC at this time.
-    Toast.makeText(this, "Disabled camera. " +
-        "There are now ${startStopResponse.response.blocking_cameras} more cameras blocking the feed.",
-        Toast.LENGTH_SHORT).show()
+    var message = if (isStopping) "Disabled camera. " else "Attempting to enable camera. "
+    message += "There are now ${startStopResponse.response.blocking_cameras} more cameras blocking the feed."
+
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
   }
 }
