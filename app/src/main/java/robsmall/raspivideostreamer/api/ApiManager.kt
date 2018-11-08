@@ -12,6 +12,12 @@ import robsmall.raspivideostreamer.api.models.StartStopResponse
  *
  * Note: Callers must {@code subscribe()} to the returned {@link Observable}.
  *
+ * CLASS that takes in an instance of the API client, then swap that out in tests
+ * object is convenient, but really only works for stateless things, harder to test or swap
+ * "inversion of control"
+ *
+ * No longer need to call ApiClient directly, responsibility of someone else
+ *
  * TODO: is this the best design pattern? I Haven't seen this used anywhere but it seems sane to me.
  */
 object ApiManager {
